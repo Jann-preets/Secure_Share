@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SecureShare | Secure File Workspace</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        body {
+            min-height: 100vh;
+            background: #f4f6fa;
+            color: #17243b;
+            font-family: -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", sans-serif;
+        }
+
+        .hero {
+            max-width: 850px;
+            margin: 12vh auto;
+            padding: 24px;
+        }
+
+        .panel {
+            padding: clamp(28px, 6vw, 64px);
+            background: white;
+            border: 1px solid #e3e8f0;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(22, 37, 61, 0.06);
+        }
+
+        .brand {
+            color: #2856a6;
+            font-weight: 750;
+            letter-spacing: 0.4px;
+        }
+
+        .eyebrow {
+            color: #2856a6;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            max-width: 650px;
+            margin-top: 22px;
+            font-size: clamp(2.2rem, 6vw, 4rem);
+            font-weight: 650;
+            letter-spacing: -2px;
+            line-height: 1.1;
+        }
+
+        .muted { color: #68758a; }
+
+        .status {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #edf2fb;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="hero">
+        <section class="panel">
+            <div class="brand fs-4 mb-5">SecureShare<span>.</span></div>
+
+            <div class="eyebrow">Privacy · Control · Integrity</div>
+
+            <h1 class="hero-title">
+                Your files deserve a more secure home.
+            </h1>
+
+            <p class="muted fs-5 mt-4 mb-4">
+                Encrypted file storage and controlled sharing,
+                designed around your privacy and access permissions.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <span class="status">AES-256-GCM planned</span>
+                <span class="status">Access-controlled sharing planned</span>
+            </div>
+
+            <hr class="my-4">
+
+            <p class="small muted mb-0">
+                Application: Running · MongoDB: {{ mongo_status }}
+            </p>
+        </section>
+    </main>
+</body>
+</html>

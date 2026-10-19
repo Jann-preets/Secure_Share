@@ -1,0 +1,256 @@
+
+{% extends "base.html" %}
+{% block title %}My Files | SecureShare{% endblock %}
+
+{% block content %}
+<style>
+    .files-wrap {
+        padding-top: 40px;
+        padding-bottom: 60px;
+    }
+
+    .files-card {
+        background: #fff;
+        border: 1px solid #e0e6ef;
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: 0 8px 28px rgba(28, 45, 75, .03);
+    }
+
+    .file-name {
+        font-weight: 600;
+        color: #1b2942;
+        overflow-wrap: anywhere;
+    }
+
+    .file-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        border-radius: 11px;
+        background: #edf2fb;
+        color: #2856a6;
+        margin-right: 12px;
+    }
+
+    .protection-badge {
+        display: inline-block;
+        color: #267343;
+        background: #edf7f0;
+        padding: 6px 9px;
+        border-radius: 7px;
+        font-size: .8rem;
+        font-weight: 600;
+    }
+
+    .share-panel {
+        background: #f7f9fc;
+        border: 1px solid #e7ecf3;
+        border-radius: 12px;
+        padding: 14px;
+        min-width: 240px;
+    }
+
+    .recipient-row {
+        border-top: 1px solid #e7ecf3;
+        padding-top: 10px;
+        margin-top: 10px;
+        overflow-wrap: anywhere;
+    }
+
+    .empty-state {
+        padding: 55px 20px;
+        text-align: center;
+    }
+
+    @media (max-width: 767px) {
+        .files-wrap { padding-top: 24px; }
+        .files-card { padding: 12px; }
+    }
+</style>
+
+<div class="container files-wrap">
+    <div class="d-flex flex-wrap justify-content-between
+                align-items-center gap-3 mb-4">
+        <div>
+            <p class="text-uppercase small fw-bold mb-2"
+               style="color:#2856a6;letter-spacing:1.5px;">
+                Private workspace
+            </p>
+            <h1 class="fw-bold mb-2">My Files</h1>
+            <p class="text-secondary mb-0">
+                Manage, share and securely download your files.
+            </p>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{{ url_for('files.shared_with_me') }}"
+               class="btn btn-outline-primary">
+                Shared with Me
+            </a>
+            <a href="{{ url_for('files.upload') }}"
+               class="btn btn-primary">
+                + Upload file
+            </a>
+        </div>
+    </div>
+
+    <div class="files-card">
+        {% if files %}
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Size</th>
+                        <th>Uploaded</th>
+                        <th>Protection</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in files %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span class="file-icon">▤</span>
+                                <span class="file-name">
+                                    {{ file.original_filename }}
+                                </span>
+                            </div>
+                        </td>
+                        <td class="text-nowrap">
+                            {% if file.size < 1024 %}
+                                {{ file.size }} B
+                            {% elif file.size < 1048576 %}
+                                {{ "%.2f"|format(file.size / 1024) }} KB
+                            {% else %}
+                                {{ "%.2f"|format(file.size / 1048576) }} MB
+                            {% endif %}
+                        </td>
+                        <td class="text-nowrap">
+                            {{ file.created_at.strftime("%d %b %Y, %H:%M") }}
+                        </td>
+                        <td>
+                            <span class="protection-badge">
+                                ● Encrypted
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('files.download',
+                                                file_id=file._id) }}"
+                               class="btn btn-outline-primary btn-sm">
+                                ↓ Download
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="5">
+                            <div class="share-panel">
+                                <h2 class="h6 fw-bold mb-3">
+                                    Share this file
+                                </h2>
+
+                                <form method="POST"
+                                      action="{{ url_for(
+                                          'files.share_file',
+                                          file_id=file._id
+                                      ) }}"
+                                      class="d-flex flex-wrap gap-2">
+                                    <input type="hidden"
+                                           name="csrf_token"
+                                           value="{{ csrf_token() }}">
+
+                                    <input type="email"
+                                           name="email"
+                                           class="form-control"
+                                           placeholder="Recipient's registered email"
+                                           aria-label="Recipient email"
+                                           required>
+
+                                    <button type="submit"
+                                            class="btn btn-dark">
+                                        Share
+                                    </button>
+                                </form>
+
+                                <div class="mt-3">
+                                    <div class="small fw-semibold">
+                                        People with access
+                                    </div>
+
+                                    {% if file.active_shares %}
+                                        {% for recipient in file.active_shares %}
+                                        <div class="recipient-row
+                                                    d-flex flex-wrap
+                                                    justify-content-between
+                                                    align-items-center gap-2">
+                                            <div>
+                                                <div class="fw-semibold">
+                                                    {{ recipient.username }}
+                                                </div>
+                                                <div class="small text-secondary">
+                                                    {{ recipient.email }}
+                                                </div>
+                                            </div>
+
+                                            <form method="POST"
+                                                  action="{{ url_for(
+                                                      'files.revoke_share',
+                                                      file_id=file._id,
+                                                      recipient_id=recipient.recipient_id
+                                                  ) }}"
+                                                  onsubmit="return confirm('Revoke this user’s access to the file?');">
+                                                <input type="hidden"
+                                                       name="csrf_token"
+                                                       value="{{ csrf_token() }}">
+
+                                                <button type="submit"
+                                                        class="btn btn-outline-danger btn-sm">
+                                                    Revoke access
+                                                </button>
+                                            </form>
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="small text-secondary mb-0 mt-2">
+                                            This file has not been shared yet.
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="small text-secondary border-top pt-3">
+            {{ files|length }}
+            {{ 'file' if files|length == 1 else 'files' }}
+            in your workspace. Shared access can be revoked by the owner.
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="file-icon mx-auto mb-3"
+                 style="width:64px;height:64px;font-size:1.6rem;">
+                ↑
+            </div>
+            <h2 class="h5 fw-bold">No files yet</h2>
+            <p class="text-secondary mb-4">
+                Upload your first file to start using your secure workspace.
+            </p>
+            <a href="{{ url_for('files.upload') }}"
+               class="btn btn-primary">
+                Upload your first file
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

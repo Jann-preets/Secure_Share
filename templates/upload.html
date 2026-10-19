@@ -1,0 +1,56 @@
+
+{% extends "base.html" %}
+{% block title %}Upload File | SecureShare{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 760px;">
+    <a href="{{ url_for('dashboard.index') }}"
+       class="text-decoration-none">&larr; Back to dashboard</a>
+
+    <div class="mt-4 p-4 p-md-5 bg-white border rounded-4 shadow-sm">
+        <p class="text-uppercase small fw-bold mb-2"
+           style="color:#2856a6;letter-spacing:1.5px;">
+            Secure storage
+        </p>
+
+        <h1 class="h2 fw-bold">Upload a file</h1>
+
+        <p class="text-secondary">
+            Your file will be encrypted before its contents are stored.
+        </p>
+
+        <form method="POST"
+              action="{{ url_for('files.upload') }}"
+              enctype="multipart/form-data"
+              class="mt-4">
+
+            <input type="hidden" name="csrf_token"
+                   value="{{ csrf_token() }}">
+
+            <label for="file" class="form-label fw-semibold">
+                Choose a file
+            </label>
+
+            <input class="form-control form-control-lg"
+                   type="file" id="file" name="file" required>
+
+            <div class="form-text mb-4">
+                Maximum size: 16 MB.
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100">
+                Encrypt and upload
+            </button>
+        </form>
+
+        <div class="mt-4 p-3 rounded-3"
+             style="background:#f4f6fa;">
+            <div class="fw-semibold mb-1">Encryption details</div>
+            <div class="small text-secondary">
+                AES-256-GCM · Unique nonce per upload ·
+                Authentication tag verification
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
