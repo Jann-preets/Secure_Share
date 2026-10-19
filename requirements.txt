@@ -5,6 +5,7 @@ Flask-Limiter
 Flask-Talisman
 pymongo[srv]
 dnspython
+certifi
 cryptography
 argon2-cffi
 python-dotenv
