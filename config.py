@@ -17,5 +17,5 @@ class Config:
     DEBUG = os.getenv("FLASK_DEBUG", "0") == "1"
 
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = "Lax"
-    SESSION_COOKIE_SECURE = False  # Local HTTP development only
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "0") == "1"
