@@ -9,3 +9,4 @@ cryptography
 argon2-cffi
 python-dotenv
 pytest
+gunicorn
